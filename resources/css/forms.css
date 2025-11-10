@@ -1,0 +1,15 @@
+                    /* Estilo para errores de validación */
+                    /* Se mantiene aquí por ser dependiente del HTML y no usar clases de Tailwind para los errores */
+                    .input-error {
+                        border-color: #FFEB3B !important;
+                        box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.2) !important;
+                    }
+
+                    .error-message {
+                        color: #FFEB3B;
+                        font-size: 0.85rem;
+                        margin-top: 0.3rem;
+                        margin-bottom: -0.3rem;
+                        font-weight: 500;
+                        animation: fadeIn 0.3s ease-out;
+                    }

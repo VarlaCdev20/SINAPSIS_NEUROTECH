@@ -1,0 +1,190 @@
+/* ==========================================================
+   🧠 WELCOME.CSS – Estilo principal (SINAPSIS)
+   ========================================================== */
+
+/* ==========================================================
+   🎨 FONDO GLOBAL DEL SITIO
+   ========================================================== */
+body {
+  background: url('/img/WELCOME/fondo 1.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Capa extra de color para contraste y profundidad */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(16, 0, 16, 0.65) 0%,
+    rgba(27, 12, 31, 0.95) 100%
+  ),
+  radial-gradient(circle at 70% 30%, rgba(213, 167, 213, 0.1), transparent 60%);
+  z-index: -1;
+}
+
+/* ==========================================================
+   💎 EFECTO GLASS
+   ========================================================== */
+.glass {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 25px rgba(146, 118, 199, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(255, 215, 0, 0.25);
+}
+
+/* ==========================================================
+   🖱️ SCROLLBAR PERSONALIZADA
+   ========================================================== */
+.scrollbar-style::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-style::-webkit-scrollbar-track {
+  background: #100010;
+}
+.scrollbar-style::-webkit-scrollbar-thumb {
+  background: #583258;
+  border-radius: 4px;
+}
+.scrollbar-style::-webkit-scrollbar-thumb:hover {
+  background: #9276C7;
+}
+
+/* ==========================================================
+   🌌 FONDOS PARALLAX
+   ========================================================== */
+.section-background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.4s ease-out;
+  z-index: 1;
+  opacity: 0.35;
+  filter: brightness(0.45);
+}
+.parallax-content {
+  position: relative;
+  z-index: 2;
+}
+.section-background-image:hover {
+  filter: brightness(0.55) blur(0.3px);
+  opacity: 0.4;
+}
+
+/* ==========================================================
+   ✨ TEXTOS Y COLORES GLOBALES
+   ========================================================== */
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6),
+               0 0 20px rgba(255, 215, 0, 0.4);
+}
+.text-glow-accent {
+  text-shadow: 0 0 10px rgba(213, 167, 213, 0.6),
+               0 0 20px rgba(213, 167, 213, 0.4);
+}
+
+/* ==========================================================
+   🟡 BOTONES
+   ========================================================== */
+.btn-gold {
+  background: #FFEB3B;
+  color: #100010;
+  border-radius: 0.75rem;
+  font-weight: 800;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+.btn-gold:hover {
+  background: #FFD700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.35);
+  transform: translateY(-1px);
+}
+.btn-gold-outline {
+  border: 1.5px solid rgba(255, 215, 0, 0.6);
+  color: #FFD700;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+.btn-gold-outline:hover {
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
+}
+
+/* ==========================================================
+   ⚙️ ANIMACIONES
+   ========================================================== */
+@keyframes pulseGold {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(255,215,0,0),
+                0 0 20px rgba(255,215,0,0.25);
+  }
+  50% {
+    box-shadow: 0 0 0px rgba(255,215,0,0),
+                0 0 35px rgba(255,215,0,0.45);
+  }
+}
+.animate-goldPulse {
+  animation: pulseGold 2.8s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3.5s ease-in-out infinite;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* ==========================================================
+   🌠 TITULARES Y SECCIONES
+   ========================================================== */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #FFD700;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+.section-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
+}
+
+/* ==========================================================
+   📱 RESPONSIVE
+   ========================================================== */
+@media (max-width: 1024px) {
+  .section-title { font-size: 2.1rem; }
+}
+@media (max-width: 640px) {
+  .section-title { font-size: 1.8rem; }
+  .btn-gold { font-size: 0.95rem; }
+}

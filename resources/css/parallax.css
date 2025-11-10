@@ -1,0 +1,81 @@
+/* ==========================================================
+   🌌 PARALLAX.CSS – Efecto visual de profundidad en fondos
+   ========================================================== */
+
+/* --- Contenedor de imagen de fondo --- */
+.section-background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.4s ease-out;
+  z-index: 1;
+
+  /* Tonalidad coherente con el tema SINAPSIS */
+  opacity: 0.35;
+  filter: brightness(0.45);
+}
+
+/* --- Capa de contenido sobre el fondo --- */
+.parallax-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Efecto hover sutil (mejora contraste visual) --- */
+.section-background-image:hover {
+  filter: brightness(0.55) blur(0.3px);
+  opacity: 0.4;
+}
+
+/* --- Capas opcionales de parallax --- */
+.parallax-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+/* --- Efecto de profundidad sutil según el desplazamiento --- */
+[data-speed] {
+  transition: transform 0.2s ease-out;
+}
+
+/* --- Transición general para la carga de imágenes --- */
+.section-background-image.fade-in {
+  animation: fadeInParallax 0.8s ease forwards;
+}
+
+@keyframes fadeInParallax {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+}
+
+/* --- Variante para secciones con brillo dorado suave --- */
+.section-background-image.gold-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 215, 0, 0.06) 0%,
+    rgba(27, 12, 31, 0.6) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.section-background-image.gold-overlay {
+  z-index: 1;
+}

@@ -1,0 +1,17 @@
+/* --- SOLO MANTENEMOS ESTILOS GENÉRICOS DE TU DISEÑO --- */
+
+/* --- Fondo translúcido del contenedor principal (si "glass" no es una clase de Tailwind) --- */
+.glass {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    /* rounded-[2.3rem] y shadow-2xl se manejan con Tailwind */
+}
+
+/* --- Si usas un 'glow' o 'shadow-glow-sm' personalizado, asegúrate de tenerlo aquí o en Tailwind config --- */
+/* Ejemplo de un 'glow' si no está en Tailwind: */
+.shadow-glow-sm {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Reemplaza con tu color de alerta */
+}
+
+/* El resto de estilos para el carrusel se manejan mediante las clases de Tailwind en el archivo .blade.php */

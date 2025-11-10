@@ -1,0 +1,180 @@
+/* ==========================================================
+   🎨 LAYOUT.CSS – Fondo, paleta global y efectos generales
+   ========================================================== */
+
+/* === Fondo global con imagen fija y degradado === */
+body {
+  background-image: url('/img/WELCOME/fondo 1.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #fff;
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Capa de degradado oscuro violeta sobre la imagen */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(1200px 600px at 70% 30%, rgba(255,215,0,0.08), transparent 60%),
+              linear-gradient(180deg, rgba(16,0,16,0.65) 0%, rgba(27,12,31,0.85) 40%, rgba(27,12,31,0.95) 100%);
+  z-index: -1;
+}
+
+/* ==========================================================
+   🪟 EFECTO GLASS – Para paneles, tarjetas o secciones
+   ========================================================== */
+.glass {
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
+}
+
+/* ==========================================================
+   ✨ BOTONES DORADOS GLOBALES
+   ========================================================== */
+@keyframes pulseGold {
+  0%, 100% {
+    box-shadow: 0 0 0px rgba(255,215,0,0),
+                0 0 20px rgba(255,215,0,0.25);
+  }
+  50% {
+    box-shadow: 0 0 0px rgba(255,215,0,0),
+                0 0 35px rgba(255,215,0,0.45);
+  }
+}
+
+/* Botón principal dorado */
+.btn-gold {
+  background: #FFEB3B;
+  color: #100010;
+  border-radius: 0.75rem;
+  font-weight: 800;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: 0 10px 20px rgba(255,215,0,0.18);
+}
+.btn-gold:hover {
+  background: #FFD700;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 35px rgba(255,215,0,0.28);
+}
+.animate-goldPulse {
+  animation: pulseGold 2.6s ease-in-out infinite;
+}
+
+/* Botón secundario dorado con borde */
+.btn-gold-outline {
+  border: 1.5px solid rgba(255,215,0,0.6);
+  color: #FFD700;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.03);
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.btn-gold-outline:hover {
+  background: rgba(255,215,0,0.08);
+  box-shadow: 0 10px 22px rgba(255,215,0,0.18);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   🖱️ SCROLLBAR PERSONALIZADA
+   ========================================================== */
+.scrollbar-style::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-style::-webkit-scrollbar-track {
+  background: #100010; /* base-dark */
+}
+.scrollbar-style::-webkit-scrollbar-thumb {
+  background: #583258; /* primary */
+  border-radius: 4px;
+}
+.scrollbar-style::-webkit-scrollbar-thumb:hover {
+  background: #9276C7; /* hover */
+}
+
+/* ==========================================================
+   🌈 UTILIDADES DE ANIMACIÓN Y EFECTOS
+   ========================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Movimiento flotante suave */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: float 3.5s ease-in-out infinite;
+}
+
+/* ==========================================================
+   🧭 ENCABEZADOS, TEXTOS Y COLORES DE TEMA
+   ========================================================== */
+h1, h2, h3, h4 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6),
+               0 0 20px rgba(255, 215, 0, 0.4);
+}
+.text-glow-accent {
+  text-shadow: 0 0 10px rgba(213, 167, 213, 0.6),
+               0 0 20px rgba(213, 167, 213, 0.4);
+}
+
+/* ==========================================================
+   🧩 ELEMENTOS VARIOS
+   ========================================================== */
+a {
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #FFD700;
+}
+section {
+  position: relative;
+  z-index: 2;
+}
+
+/* Fondo de las secciones con imagen dinámica (Parallax) */
+.section-background-image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  filter: brightness(0.45);
+  transition: filter 0.5s ease, opacity 0.5s ease;
+  z-index: 1;
+}
+.section-background-image:hover {
+  filter: brightness(0.55) blur(0.3px);
+  opacity: 0.38;
+}
+.parallax-content {
+  position: relative;
+  z-index: 2;
+}

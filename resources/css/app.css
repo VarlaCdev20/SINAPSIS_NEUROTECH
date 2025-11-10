@@ -1,0 +1,35 @@
+/* ✅ 1. Importaciones de tus módulos personalizados (siempre deben ir primero) */
+@import "./layout.css";
+@import "./parallax.css";
+@import "./carousel.css";
+@import "./forms.css";  /* ✅ nombre correcto */
+
+
+/* ✅ 2. Importación de Tailwind CSS */
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+/* ✅ 3. Correcciones generales de Alpine */
+[x-cloak] {
+  display: none !important;
+}
+
+/* ✅ 4. Ajustes globales extra */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+  color: #fff;
+  background-color: #100010; /* respaldo si falla la imagen de fondo */
+}
+
+/* ✅ 5. Clases utilitarias u overrides pequeños */
+a {
+  text-decoration: none;
+}
