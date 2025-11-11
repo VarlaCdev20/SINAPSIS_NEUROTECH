@@ -1,3 +1,3 @@
 <x-menu>
-    @livewire('solicitudes')
+    @livewire('solicitudes', key('solicitudes-component'))
 </x-menu>

@@ -1,0 +1,15 @@
+<x-menu>
+    <livewire:agenda-medico 
+        :medico="$medico"
+        :citas="$citas"
+        :total="$total"
+        :programadas="$programadas"
+        :asistidas="$asistidas"
+        :canceladas="$canceladas"
+        :meses="$meses"
+        :conteos="$conteos"
+        :proxCita="$proxCita"
+        :tiempoRestante="$tiempoRestante"
+        :pacientesAtendidosMes="$pacientesAtendidosMes"
+    />
+</x-menu>
