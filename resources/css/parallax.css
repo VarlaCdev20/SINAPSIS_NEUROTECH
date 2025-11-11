@@ -2,7 +2,7 @@
    🌌 PARALLAX.CSS – Efecto visual de profundidad en fondos
    ========================================================== */
 
-/* --- Contenedor de imagen de fondo --- */
+/* --- Contenedor de imagen de fondo (secciones) --- */
 .section-background-image {
   position: absolute;
   top: 0;
@@ -12,12 +12,11 @@
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.4s ease-out;
+  transition: filter 0.5s ease, opacity 0.5s ease;
   z-index: 1;
-
-  /* Tonalidad coherente con el tema SINAPSIS */
   opacity: 0.35;
   filter: brightness(0.45);
+  will-change: transform;
 }
 
 /* --- Capa de contenido sobre el fondo --- */
@@ -44,7 +43,7 @@
 
 /* --- Efecto de profundidad sutil según el desplazamiento --- */
 [data-speed] {
-  transition: transform 0.2s ease-out;
+  will-change: transform;
 }
 
 /* --- Transición general para la carga de imágenes --- */
@@ -76,6 +75,46 @@
   z-index: 2;
   pointer-events: none;
 }
+
 .section-background-image.gold-overlay {
   z-index: 1;
+}
+
+/* ==========================================================
+   🌌 FONDO GLOBAL CON PARALLAX SUAVE
+   ========================================================== */
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* ✅ Ruta corregida (usa /, no public\) */
+  background-image: url("/img/welcome/ClinicaMigraña.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: brightness(0.35) blur(1px);
+  z-index: 0;
+}
+
+/* ✨ Degradado violeta translúcido dinámico */
+.background-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--gradiente-angulo, 135deg),
+      rgba(130, 20, 220, 0.35) 0%,
+      rgba(70, 10, 130, 0.45) 50%,
+      rgba(20, 10, 60, 0.7) 100%);
+  mix-blend-mode: overlay;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* --- Cuerpo principal por encima del fondo --- */
+body {
+  position: relative;
+  z-index: 2;
 }
