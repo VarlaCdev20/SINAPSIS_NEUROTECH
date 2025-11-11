@@ -1,16 +1,16 @@
     <section id="contacto" class="relative bg-base-dark py-20">
         <div class="section-background-image"
-            data-src="https://via.placeholder.com/1920x1080/100010/AAAAFF?text=Atención+Personalizada+Neurología"
+            data-src="{{ asset('img/welcome/neuronas.png') }}"
             data-speed="0.07" data-brightness="0.5" data-opacity="0.22"></div>
 
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid gap-14 lg:grid-cols-2">
                 <div class="animate-fadeIn delay-300">
                     <h2
-                        class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-alert-400 to-accent-500 text-shadow-glow-alert">
+                        class="text-3xl sm:text-4xl font-extrabold bg-clip-text text-center bg-gradient-to-r from-alert-400 to-accent-500 text-shadow-glow-alert">
                         Agenda tu Consulta
                     </h2>
-                    <p class="mt-3.5 text-white/80 max-w-xl text-lg leading-relaxed">
+                    <p class="mt-3.5 text-white/80 max-w-xl text-lg text-center leading-relaxed">
                         Completa nuestro formulario seguro para agendar tu cita. Nuestro equipo médico se pondrá en
                         contacto para confirmar detalles y prepararte para tu visita.
                     </p>

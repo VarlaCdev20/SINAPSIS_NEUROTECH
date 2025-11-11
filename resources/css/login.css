@@ -1,0 +1,114 @@
+/* login.css — estilos específicos para la vista de login (alineado con la interfaz principal de SINAPSIS) */
+
+/* ------------------------------------------------------------- */
+/* VARIABLES DE COLOR GLOBALES (para consistencia con SINAPSIS) */
+/* ------------------------------------------------------------- */
+:root {
+  --color-sinapsis-dark: #1A0D2F; /* Fondo principal oscuro */
+  --color-primary-gold: #FFD700; /* Amarillo/Dorado principal */
+  --color-light-gold: #F9A825;   /* Amarillo/Dorado más cálido */
+  --color-accent-purple: #D5A7D5; /* Púrpura de acento (para brillos, etc.) */
+  --color-text-light: #FFFFFF;    /* Texto blanco */
+  --color-text-faded: rgba(255, 255, 255, 0.7); /* Texto semi-transparente */
+}
+
+/* ------------------------------------------------------------- */
+/* ESTILOS GLOBALES Y COMPONENTES REUSABLES */
+/* ------------------------------------------------------------- */
+
+/* Aseguramos que el contenedor glass del login respete contraste y ligero blur */
+.glass {
+  backdrop-filter: blur(6px);
+  background-color: rgba(30, 15, 50, 0.4); /* Fondo más oscuro y translúcido */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Borde sutil */
+}
+
+/* Ajustes concretos para la capa global de fondo en login */
+section.relative .background-overlay {
+  opacity: 0.36; /* un poco más translúcido por defecto */
+}
+
+/* ------------------------------------------------------------- */
+/* ESTILOS DEL BOTÓN PRINCIPAL (btn-primary-sinapsis) */
+/* (Reemplaza .login-button-primary) */
+/* ------------------------------------------------------------- */
+.btn-primary-sinapsis {
+  width: 100%;
+  padding: 12px 20px; /* Consistente con el diseño anterior */
+  border: none;
+  border-radius: 8px; /* Redondez sutil */
+  cursor: pointer;
+  
+  /* Degradado de fondo (el efecto "amarillo brillante" del header) */
+  background: linear-gradient(90deg, var(--color-primary-gold) 0%, var(--color-light-gold) 100%);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.45); /* Sombra para darle profundidad */
+  
+  /* Estilos del texto */
+  color: var(--color-sinapsis-dark); /* Texto oscuro para contraste */
+  font-size: 1.1rem;
+  font-weight: 800; /* Extra bold */
+  text-align: center;
+  
+  /* Centrar el contenido (el ícono y el texto) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Espacio entre el ícono y el texto */
+  
+  /* Transición para el hover/interacción */
+  transition: all 0.3s ease;
+}
+
+.btn-primary-sinapsis:hover {
+  opacity: 0.95;
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.65);
+  transform: translateY(-1px); /* Ligero movimiento hacia arriba */
+}
+
+/* ------------------------------------------------------------- */
+/* ESTILOS DE LOS INPUTS DEL FORMULARIO (form-input-sinapsis) */
+/* (Para replicar el estilo de los inputs de búsqueda/otros en la interfaz principal) */
+/* ------------------------------------------------------------- */
+.form-input-sinapsis {
+  @apply mt-1 w-full rounded-xl px-4 py-3 outline-none; /* Mantener estructura básica de Tailwind */
+  
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Borde sutil */
+  background-color: rgba(255, 255, 255, 0.05); /* Fondo muy claro y translúcido */
+  color: var(--color-text-light); /* Texto blanco */
+  
+  /* Placeholder */
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5); /* Placeholder más claro */
+  }
+  
+  /* Focus */
+  &:focus {
+    border-color: var(--color-primary-gold); /* Borde dorado al enfocar */
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3); /* Sombra dorada al enfocar */
+    background-color: rgba(255, 255, 255, 0.1); /* Un poco más claro al enfocar */
+  }
+}
+
+/* Estilos para checkbox/radio (ajuste para color dorado) */
+input[type="checkbox"].text-primary-gold:checked {
+  background-color: var(--color-primary-gold);
+  border-color: var(--color-primary-gold);
+}
+
+/* Clases de color para texto/enlaces consistentes */
+.text-primary-gold {
+  color: var(--color-primary-gold);
+}
+
+.hover\:text-light-gold:hover {
+  color: var(--color-light-gold);
+}
+
+.from-primary-gold {
+    --tw-gradient-from: var(--color-primary-gold) var(--tw-gradient-from-position);
+    --tw-gradient-to: rgba(255, 215, 0, 0) var(--tw-gradient-to-position);
+}
+
+.to-light-gold {
+    --tw-gradient-to: var(--color-light-gold) var(--tw-gradient-to-position);
+}

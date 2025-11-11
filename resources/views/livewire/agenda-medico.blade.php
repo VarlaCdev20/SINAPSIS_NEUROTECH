@@ -180,4 +180,4 @@
             });
         });
     </script>
-@endpush 
+@endpush

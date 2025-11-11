@@ -4,16 +4,25 @@
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('parallaxInit', () => ({
-    init() {
-      // Cargar imágenes al iniciar
-      this.loadBackgroundImages();
+      animationFrameId: null,
+      lastScrollY: 0,
+    
+      init() {
+        // Cargar imágenes al iniciar
+        this.loadBackgroundImages();
 
-      // Escuchar el scroll para efecto de desplazamiento
-      window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+        // Escuchar el scroll con requestAnimationFrame para fluidez
+        window.addEventListener('scroll', () => {
+          this.lastScrollY = window.scrollY || window.pageYOffset;
+          if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+          }
+          this.animationFrameId = requestAnimationFrame(() => this.handleScroll());
+        }, { passive: true });
 
-      // Aplicar la posición inicial
-      this.handleScroll();
-    },
+        // Aplicar la posición inicial
+        this.handleScroll();
+      },
 
     /* =============================================
        CARGA DE IMÁGENES DE FONDO
@@ -39,7 +48,7 @@ document.addEventListener('alpine:init', () => {
        EFECTO DE DESPLAZAMIENTO (PARALLAX)
     ============================================= */
     handleScroll() {
-      const scrollY = window.scrollY || window.pageYOffset;
+      const scrollY = this.lastScrollY;
 
       document.querySelectorAll('.section-background-image').forEach(bg => {
         const speed = parseFloat(bg.dataset.speed || 0.1);

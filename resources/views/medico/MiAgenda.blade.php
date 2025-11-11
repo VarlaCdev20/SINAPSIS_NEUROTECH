@@ -1,6 +1,6 @@
 <x-menu>
-    <livewire:agenda-admin 
-        :administrador="$administrador"
+    <livewire:agenda-medico 
+        :medico="$medico"
         :citas="$citas"
         :total="$total"
         :programadas="$programadas"
@@ -10,5 +10,6 @@
         :conteos="$conteos"
         :proxCita="$proxCita"
         :tiempoRestante="$tiempoRestante"
+        :pacientesAtendidosMes="$pacientesAtendidosMes"
     />
 </x-menu>

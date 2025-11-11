@@ -18,7 +18,7 @@ class AgendaAdmin extends Component
     public int $asistidas = 0;
     public int $canceladas = 0;
     public array $meses = [];
-    public array $conteos = []; 
+    public array $conteos = [];
     public $proxCita = null;
     public $tiempoRestante = null;
 =======

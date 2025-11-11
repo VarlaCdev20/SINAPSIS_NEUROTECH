@@ -21,12 +21,12 @@ use App\Livewire\{
 | 🔓 RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::post('/contacto/store', [ContactoController::class, 'store'])->name('contacto.store');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,15 +67,11 @@ Route::middleware([
     |--------------------------------------------------------------------------
     | 💜 PACIENTE: MÓDULOS
     |--------------------------------------------------------------------------
-    | Incluye todas las vistas y Livewire relacionados al paciente autenticado.
     */
     Route::prefix('paciente')->group(function () {
-        // Agenda del paciente (usa AgendaController@index)
+        // 🗓️ Agenda del paciente
         Route::get('/agenda', [AgendaController::class, 'index'])
             ->name('paciente.agenda');
-
-        // Aquí puedes añadir más rutas de paciente (ejemplo):
-        // Route::get('/historial', [HistorialController::class, 'index'])->name('paciente.historial');
     });
 
 
@@ -84,7 +80,11 @@ Route::middleware([
     | ⚙️ ADMINISTRADOR: MÓDULOS
     |--------------------------------------------------------------------------
     */
-    Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::prefix('admin')->group(function () {
+
+        // 🗓️ Agenda del administrador
+        Route::get('/agenda', [AgendaController::class, 'index'])
+            ->name('admin.agenda');
 
         // 📋 Pacientes (vista listar)
         Route::get('/pacientes', function () {
@@ -103,14 +103,16 @@ Route::middleware([
     | 🧠 MÉDICO: MÓDULOS
     |--------------------------------------------------------------------------
     */
-    Route::prefix('medico')->middleware(['auth'])->group(function () {
+    Route::prefix('medico')->group(function () {
+
+        // 🗓️ Agenda del médico
+        Route::get('/agenda', [AgendaController::class, 'index'])
+            ->name('medico.agenda');
 
         // 🧠 Solicitudes médicas
         Route::get('/solicitudes', function () {
             return view('medico.solicitudes.listar');
-        })
-            ->name('medico.solicitudes.listar')
-            ->middleware('can:Solicitudes');
+        })->name('medico.solicitudes.listar');
 
         // 📤 Exportación de solicitantes
         Route::get('/solicitantes/exportar/csv', [SolicitanteExportController::class, 'exportCsv'])
