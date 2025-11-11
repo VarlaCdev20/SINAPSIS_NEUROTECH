@@ -267,5 +267,4 @@ class UserController extends Controller
             return back()->with('error', 'Error al sincronizar roles: ' . $e->getMessage());
         }
     }
-
 }

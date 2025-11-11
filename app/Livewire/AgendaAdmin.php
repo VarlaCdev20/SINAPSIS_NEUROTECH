@@ -9,8 +9,6 @@ use App\Models\{Cita, Medico};
 
 class AgendaAdmin extends Component
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     public $administrador;
     public Collection $citas;
     public int $total = 0;
@@ -21,18 +19,12 @@ class AgendaAdmin extends Component
     public array $conteos = [];
     public $proxCita = null;
     public $tiempoRestante = null;
-=======
-=======
->>>>>>> Stashed changes
     // 🔎 Filtros y búsqueda
     public string $buscar = '';
     public ?string $filtroMedico = null;     // COD_MED
     public ?string $filtroEstado = null;     // programada | atendida | cancelada
     public ?string $filtroTipo = null;       // presencial | virtual
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 
     // 🗓️ Rango visible (semana actual por defecto)
     public string $fechaInicio;

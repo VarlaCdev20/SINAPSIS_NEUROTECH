@@ -1,3 +1,0 @@
-<x-menu>
-
-</x-menu>
