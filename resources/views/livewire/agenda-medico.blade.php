@@ -180,4 +180,8 @@
             });
         });
     </script>
+<<<<<<< HEAD
 @endpush
+=======
+@endpush 
+>>>>>>> Victor-Developer

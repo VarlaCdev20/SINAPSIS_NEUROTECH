@@ -21,7 +21,11 @@
                         @endif
                     </div>
                 </div>
+<<<<<<< HEAD
             </div>
+=======
+            </div> 
+>>>>>>> Victor-Developer
 
             <div class="text-right">
                 <p class="text-sm text-white/80">Administrador:</p>

@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 class AgendaMedico extends Component
 {
     public $medico;
-
+ 
     // 📊 Datos principales
     public Collection $citas;
     public int $total = 0;
