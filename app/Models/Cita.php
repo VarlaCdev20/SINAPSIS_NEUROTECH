@@ -28,7 +28,11 @@ class Cita extends Model
         'fec_reg_cit',
     ];
 
-    // 🔹 Generar código automáticamente
+    protected $casts = [
+        'fec_cit' => 'datetime',
+        'fec_reg_cit' => 'datetime',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -42,7 +46,6 @@ class Cita extends Model
         });
     }
 
-    // Relaciones coherentes con tus migraciones
     public function solicitante()
     {
         return $this->belongsTo(Solicitante::class, 'cod_sol', 'cod_sol');
