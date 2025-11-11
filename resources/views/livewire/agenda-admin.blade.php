@@ -28,7 +28,11 @@
                     </div>
                 </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             </div> 
+=======
+            </div>
+>>>>>>> Stashed changes
 =======
             </div>
 >>>>>>> Stashed changes
