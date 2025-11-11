@@ -253,7 +253,7 @@
                 },
                 options: {
                     responsive: true,
-                    cutout: '1%',
+                    cutout: '50%',
                     plugins: {
                         legend: {
                             position: 'bottom'

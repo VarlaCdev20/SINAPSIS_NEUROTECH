@@ -4,25 +4,26 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Solicitante;
+use Livewire\Attributes\On;
 
 class Solicitudes extends Component
 {
     public $buscar = '';
+    public $n_registros = '';
 
-    protected $listeners = ['refreshComponent' => '$refresh'];
-
-    // Abrir confirmación de aprobación
     public function aprobar($cod_sol)
     {
         $this->dispatch('confirmarAprobacion', $cod_sol);
     }
 
-    #[\Livewire\Attributes\On('confirmadoAprobacion')]
+    #[On('confirmadoAprobacion')]
     public function confirmadoAprobacion($codSol)
     {
-        Solicitante::where('cod_sol', $codSol)->update([
-            'est_sol' => 'aprobado'
-        ]);
+        $solicitante = Solicitante::where('cod_sol', $codSol)->first();
+
+        if ($solicitante) {
+            $solicitante->update(['est_sol' => 'aprobado']);
+        }
 
         $this->dispatch('swal', [
             'icon' => 'success',
@@ -30,22 +31,21 @@ class Solicitudes extends Component
             'text' => 'El solicitante fue aprobado correctamente.',
             'refresh' => true,
         ]);
-
-        $this->dispatch('refreshComponent');
     }
 
-    // Rechazar solicitud
     public function rechazar($cod_sol)
     {
         $this->dispatch('confirmarRechazo', $cod_sol);
     }
 
-    #[\Livewire\Attributes\On('confirmadoRechazo')]
+    #[On('confirmadoRechazo')]
     public function confirmadoRechazo($codSol)
     {
-        Solicitante::where('cod_sol', $codSol)->update([
-            'est_sol' => 'rechazado'
-        ]);
+        $solicitante = Solicitante::where('cod_sol', $codSol)->first();
+
+        if ($solicitante) {
+            $solicitante->update(['est_sol' => 'rechazado']);
+        }
 
         $this->dispatch('swal', [
             'icon' => 'info',
@@ -53,21 +53,26 @@ class Solicitudes extends Component
             'text' => 'El solicitante fue marcado como rechazado.',
             'refresh' => true,
         ]);
+    }
 
-        $this->dispatch('refreshComponent');
+    public function abrirAgenda($cod_sol)
+    {
+        // Dispara evento al componente agenda-solicitante
+        $this->dispatch('abrirAgenda', $cod_sol);
     }
 
     public function render()
     {
         $solicitantes = Solicitante::query()
             ->when($this->buscar, function ($q) {
-                $q->where('nom_sol', 'like', "%{$this->buscar}%")
-                    ->orWhere('ap_pat_sol', 'like', "%{$this->buscar}%")
-                    ->orWhere('ap_mat_sol', 'like', "%{$this->buscar}%")
-                    ->orWhere('email_sol', 'like', "%{$this->buscar}%")
-                    ->orWhere('cod_sol', 'like', "%{$this->buscar}%");
+                $q->where(function ($sub) {
+                    $sub->where('nom_sol', 'like', "%{$this->buscar}%")
+                        ->orWhere('ap_pat_sol', 'like', "%{$this->buscar}%")
+                        ->orWhere('cod_sol', 'like', "%{$this->buscar}%");
+                });
             })
             ->orderBy('created_at', 'desc')
+            ->when($this->n_registros, fn($q) => $q->limit($this->n_registros))
             ->get();
 
         return view('livewire.solicitudes', compact('solicitantes'));

@@ -8,5 +8,7 @@
         :canceladas="$canceladas"
         :meses="$meses"
         :conteos="$conteos"
+        :proxCita="$proxCita"
+        :tiempoRestante="$tiempoRestante"
     />
 </x-menu>

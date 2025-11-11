@@ -18,16 +18,18 @@
             <div class="flex flex-wrap items-center gap-4">
 
                 <!-- Buscar -->
+                {{-- ⚡ Mejora: debounce para búsqueda en tiempo real eficiente --}}
                 <div class="flex items-center gap-2 bg-white px-3 py-2 border border-gray-300 rounded-lg shadow-sm">
                     <i class="bi bi-search text-accent-600 text-lg"></i>
-                    <input type="search" wire:model.live="buscar" placeholder="Nombre, código o correo..."
+                    <input type="search" wire:model.debounce.500ms="buscar" placeholder="Nombre, código o correo..."
                         class="focus:outline-none bg-transparent text-gray-700 w-44 sm:w-64">
                 </div>
 
                 <!-- Ver registros -->
+                {{-- ⚡ Mejora: uso correcto de wire:model en lugar de wire:model.live --}}
                 <div class="flex items-center space-x-2">
                     <label class="text-gray-700 font-medium">Ver:</label>
-                    <select wire:model.live='n_registros'
+                    <select wire:model="n_registros"
                         class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-accent-200">
                         <option value="">Todo</option>
                         <option value="10">10</option>
@@ -42,8 +44,6 @@
                     <i class="bi bi-calendar2-plus-fill text-lg"></i>
                     <span class="hidden sm:inline">Asignar Cita</span>
                 </button>
-
-
 
             </div>
 
@@ -76,16 +76,21 @@
             </div>
         </div>
 
+        {{-- ⚡ Mejora: script reubicado dentro de livewire:navigated para persistencia tras render --}}
         <script>
-            const btn = document.getElementById('exportarBtn');
-            const menu = document.getElementById('exportarMenu');
+            document.addEventListener('livewire:navigated', () => {
+                const btn = document.getElementById('exportarBtn');
+                const menu = document.getElementById('exportarMenu');
 
-            btn.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
+                if (!btn || !menu) return;
 
-            window.addEventListener('click', (e) => {
-                if (!btn.contains(e.target)) menu.classList.add('hidden');
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                });
+
+                window.addEventListener('click', (e) => {
+                    if (!btn.contains(e.target)) menu.classList.add('hidden');
+                });
             });
         </script>
 
@@ -132,8 +137,6 @@
                                         <span class="hidden sm:inline">Aprobar</span>
                                     </button>
 
-
-                                    <!-- Rechazar -->
                                     <button wire:click="rechazar('{{ $s->cod_sol }}')"
                                         class="text-red-600 hover:text-red-800 font-semibold inline-flex items-center space-x-1 transition"
                                         title="Rechazar">
@@ -173,8 +176,7 @@
                         @forelse ($aprobados as $s)
                             <tr class="hover:bg-green-50 transition-colors">
                                 <td class="px-6 py-3 font-medium">{{ $s->cod_sol }}</td>
-                                <td class="px-6 py-3">{{ $s->nom_sol }} {{ $s->ap_pat_sol }} {{ $s->ap_mat_sol }}
-                                </td>
+                                <td class="px-6 py-3">{{ $s->nom_sol }} {{ $s->ap_pat_sol }} {{ $s->ap_mat_sol }}</td>
                                 <td class="px-6 py-3">{{ $s->email_sol ?? '—' }}</td>
                                 <td class="px-6 py-3">
                                     {{ \Illuminate\Support\Str::limit($s->des_sol ?? 'Sin descripción', 100) }}</td>
@@ -228,16 +230,18 @@
             </div>
         </div>
     </div>
+
     @livewire('agenda-solicitante')
-
-
 </div>
 
+<!-- Reemplaza el bloque <script> de SweetAlert al final -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('livewire:init', () => {
-        // ✅ Confirmación de aprobación
-        Livewire.on('confirmarAprobacion', codSol => {
+        if (!Livewire) return;
+        
+        Livewire.on('confirmarAprobacion', (codSol) => {
+            console.log('Aprobación:', codSol);
             Swal.fire({
                 title: '¿Aprobar solicitud?',
                 text: 'Se marcará como aprobada de inmediato.',
@@ -249,16 +253,15 @@
                 cancelButtonText: 'Cancelar'
             }).then(result => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('confirmadoAprobacion', codSol);
+                    Livewire.dispatchTo('solicitudes', 'confirmadoAprobacion', codSol);
                 }
             });
         });
 
-        // ⚠️ Confirmación de rechazo
-        Livewire.on('confirmarRechazo', codSol => {
+        Livewire.on('confirmarRechazo', (codSol) => {
             Swal.fire({
                 title: '¿Rechazar solicitud?',
-                text: "Esta acción no se puede deshacer.",
+                text: 'Esta acción no se puede deshacer.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e53e3e',
@@ -267,10 +270,22 @@
                 cancelButtonText: 'Cancelar'
             }).then(result => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('confirmadoRechazo', codSol);
+                    Livewire.dispatchTo('solicitudes', 'confirmadoRechazo', codSol);
+                }
+            });
+        });
+
+        Livewire.on('swal', (data) => {
+            Swal.fire({
+                icon: data.icon,
+                title: data.title,
+                text: data.text,
+                didClose: () => {
+                    if (data.refresh) {
+                        window.location.reload(); // Recarga la página completamente
+                    }
                 }
             });
         });
     });
 </script>
-<!-- 🌟 MODAL DE REGISTRO DE CITA -->
