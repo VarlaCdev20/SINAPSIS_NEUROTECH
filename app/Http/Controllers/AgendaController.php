@@ -29,7 +29,7 @@ class AgendaController extends Controller
         if ($paciente && ($paciente->COD_PAC ?? null)) {
             $baseCitas->where(function ($q) use ($paciente) {
                 $q->where('cod_pac', $paciente->COD_PAC)
-                  ->orWhere('COD_PAC', $paciente->COD_PAC);
+                    ->orWhere('COD_PAC', $paciente->COD_PAC);
             });
         } else {
             $baseCitas->whereRaw('1=0');
@@ -132,26 +132,32 @@ class AgendaController extends Controller
      */
     protected function resolvePaciente($user)
     {
+        // 1️⃣ Relación directa usando cod_usu (tu sistema de códigos)
+        try {
+            $paciente = \App\Models\Paciente::where('cod_usu', $user->cod_usu)->first();
+            if ($paciente) return $paciente;
+        } catch (\Throwable $e) {
+        }
+
+        // 2️⃣ Por si acaso la relación está definida en el modelo
         try {
             if (method_exists($user, 'paciente')) {
                 $rel = $user->paciente();
                 if ($rel && $rel->exists()) return $rel->first();
             }
-        } catch (\Throwable $e) {}
-
-        try {
-            $byHas = Paciente::whereHas('usuario', fn($q) => $q->where('id', $user->id))->first();
-            if ($byHas) return $byHas;
-        } catch (\Throwable $e) {}
-
-        $cols = ['COD_USU', 'ID_USU', 'USU_ID', 'user_id', 'id_usu'];
-        foreach ($cols as $col) {
-            try {
-                $hit = Paciente::where($col, $user->id)->first();
-                if ($hit) return $hit;
-            } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
         }
 
+        // 3️⃣ Por relación inversa
+        try {
+            $byHas = \App\Models\Paciente::whereHas('usuario', function ($q) use ($user) {
+                $q->where('cod_usu', $user->cod_usu);
+            })->first();
+            if ($byHas) return $byHas;
+        } catch (\Throwable $e) {
+        }
+
+        // Fallback: sin paciente asociado
         return null;
     }
 }

@@ -53,16 +53,21 @@
                     <i class="bi bi-plus-circle"></i> Nueva cita
                 </button>
 
-                <div class="bg-white/20 px-5 py-2 rounded-xl backdrop-blur-md text-sm shadow-inner">
+                <div class="bg-white/20 px-5 py-2 rounded-xl backdrop-blur-md text-sm shadow-inner" x-data
+                    x-init="setInterval(() => Livewire.emit('refreshComponent'), 60000)">
+
                     <i class="bi bi-calendar-heart"></i> Próxima cita:
                     <strong>
-                        {{ $proxCita ? \Carbon\Carbon::parse($proxCita->fec_cit)->translatedFormat('l d \d\e F, H:i') : 'Sin próximas' }}
+                        {{ $proxCita ? $proxCita->fec_cit->translatedFormat('l d \d\e F, H:i') : 'Sin próximas' }}
                     </strong>
+
                     @if ($tiempoRestante)
                         <br>
                         <span class="text-xs text-white/80">{{ $tiempoRestante }}</span>
                     @endif
                 </div>
+
+
 
                 <div class="bg-white/20 px-5 py-2 rounded-xl backdrop-blur-md text-sm shadow-inner">
                     <i class="bi bi-activity"></i> Citas este mes:
