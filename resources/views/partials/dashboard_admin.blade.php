@@ -238,7 +238,7 @@
         const ctx1 = document.getElementById('userStatusChart');
         if (ctx1) {
             new Chart(ctx1, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: ['Activos', 'Solicitantes', 'Desactivados'],
                     datasets: [{
@@ -253,7 +253,7 @@
                 },
                 options: {
                     responsive: true,
-                    cutout: '70%',
+                    cutout: '50%',
                     plugins: {
                         legend: {
                             position: 'bottom'

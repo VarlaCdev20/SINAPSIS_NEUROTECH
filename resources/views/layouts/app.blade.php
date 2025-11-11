@@ -41,5 +41,7 @@
         @stack('modals')
 
         @livewireScripts
+        {{-- Scripts de Livewire DESPUÉS del cierre del body --}}
+        <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/csp@3.x.x/dist/cdn.min.js"></script>
     </body>
 </html>

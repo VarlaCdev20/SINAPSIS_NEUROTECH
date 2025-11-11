@@ -72,7 +72,7 @@
 
         <div class="bg-white/90 backdrop-blur p-4 rounded-2xl shadow-sm border border-cyan-100">
             <div class="flex items-center justify-between">
-                <span class="text-xs uppercase text-gray-500">Telemedicina</span>
+                <span class="text-xs uppercase text-gray-500">Reuniones Virtuales</span>
                 <i class="bi bi-camera-video text-[#0891B2] text-xl"></i>
             </div>
             <div class="mt-1 text-3xl font-bold text-gray-900">{{ $hoyVirtual }}</div>
@@ -120,8 +120,8 @@
             </div>
 
             <div class="border-t pt-4">
-                <h5 class="font-semibold text-gray-800 mb-1">Conversión clínica</h5>
-                <p class="text-xs text-gray-500">Solicitantes → Pacientes</p>
+                <h5 class="font-semibold text-gray-800 mb-1">Tabla de Solicitantes</h5>
+                <p class="text-xs text-gray-500">Tus Solicitantes Pendientes</p>
                 <canvas id="chart-conversion" class="h-36 mt-3"></canvas>
             </div>
         </div>
@@ -230,7 +230,6 @@
             </table>
         </div>
     </div>
-
     <!-- Solicitantes pendientes -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
         <h5 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -289,10 +288,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Gráfico de distribución de citas
+        // === 📊 Gráfico de distribución de citas ===
         (function() {
             const ctx = document.getElementById('chart-citas');
             if (!ctx) return;
+
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -303,12 +303,8 @@
                             Number(@json($stats['presencial'] ?? 0)),
                             Number(@json($stats['canceladas'] ?? 0))
                         ],
-                        backgroundColor: [
-                            '#3B82F6',
-                            '#EC4899',
-                            '#F59E0B'
-                        ],
-                        borderColor: '#ffffff',
+                        backgroundColor: ['#3B82F6', '#EC4899', '#F59E0B'],
+                        borderColor: '#fff',
                         borderWidth: 2
                     }]
                 },
@@ -324,10 +320,11 @@
             });
         })();
 
-        // Gráfico de conversión clínica
+        // === 📈 Gráfico de conversión clínica ===
         (function() {
             const ctx = document.getElementById('chart-conversion');
             if (!ctx) return;
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -338,16 +335,8 @@
                             Number(@json($solAprobados ?? 0)),
                             Number(@json($solRechazados ?? 0))
                         ],
-                        backgroundColor: [
-                            '#6366F1',
-                            '#16A34A',
-                            '#DC2626'
-                        ],
-                        borderColor: [
-                            '#4338CA',
-                            '#0F7A36',
-                            '#B91C1C'
-                        ],
+                        backgroundColor: ['#6366F1', '#16A34A', '#DC2626'],
+                        borderColor: ['#4338CA', '#0F7A36', '#B91C1C'],
                         borderWidth: 1.5
                     }]
                 },
@@ -370,7 +359,7 @@
             });
         })();
 
-        // Calendario compacto semanal
+        // === 📅 Calendario compacto semanal ===
         (function() {
             const eventos = @json($calendarEvents);
             const el = document.getElementById('calendar-mini');
@@ -390,87 +379,112 @@
                 },
                 events: eventos,
                 eventDisplay: 'block',
+
+                // 👉 Click en una fecha
                 dateClick: function(info) {
                     const fecha = info.dateStr.slice(0, 10);
                     const delDia = eventos.filter(ev => (ev.start || '').slice(0, 10) === fecha);
-                    renderCitasDiaModal(delDia, fecha);
+                    mostrarAvisoCalendario(info, delDia, fecha);
                 }
             });
 
             cal.render();
 
-            window.renderCitasDiaModal = function(items, fechaISO) {
-                const cont = document.getElementById('contenedor-citas-dia');
-                if (!cont) return;
-                cont.innerHTML = '';
+            // 🪄 Popup personalizado dentro del calendario
+            function mostrarAvisoCalendario(info, citas, fechaISO) {
+                // Elimina cualquier popup anterior
+                document.querySelectorAll('.popup-cita').forEach(p => p.remove());
 
-                if (!items || items.length === 0) {
-                    cont.innerHTML = '<div class="p-4 text-center text-gray-500">No hay citas para este día.</div>';
+                const popup = document.createElement('div');
+                popup.classList.add('popup-cita');
+                Object.assign(popup.style, {
+                    position: 'absolute',
+                    zIndex: '9999',
+                    background: 'linear-gradient(135deg, #F8FAFC, #EEF2FF)',
+                    border: '2px solid #6D28D9',
+                    borderRadius: '12px',
+                    boxShadow: '0 6px 16px rgba(109,40,217,0.25)',
+                    padding: '12px 16px',
+                    fontSize: '14px',
+                    color: '#1E1B4B',
+                    maxWidth: '260px',
+                    pointerEvents: 'auto',
+                    transition: 'opacity 0.3s ease, transform 0.3s ease',
+                    opacity: '0',
+                    transform: 'translateY(-6px)',
+                    backdropFilter: 'blur(8px)'
+                });
+
+                // Contenido dinámico
+                if (citas.length === 0) {
+                    popup.innerHTML = `
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="bi bi-emoji-frown text-rose-600"></i>
+                        <span>No tienes citas el <strong>${fechaISO}</strong>.</span>
+                    </div>`;
                 } else {
-                    items.sort((a, b) => (a.start || '').localeCompare(b.start || ''));
-                    items.forEach(ev => {
+                    let citasHTML = "";
+                    citas.forEach(ev => {
                         const e = ev.extendedProps || {};
-                        const h = ev.start?.slice(11, 16) || '--:--';
-                        const estado = (e.estado || 'registrado').toLowerCase();
-                        const cls = {
-                            'registrado': 'bg-violet-100 text-violet-700',
-                            'confirmado': 'bg-emerald-100 text-emerald-700',
-                            'reprogramada': 'bg-amber-100 text-amber-700',
-                            'reprogramado': 'bg-amber-100 text-amber-700',
-                            'cancelada': 'bg-rose-100 text-rose-700',
-                            'cancelado': 'bg-rose-100 text-rose-700',
-                        } [estado] || 'bg-gray-100 text-gray-700';
-
-                        const tipo = e.tipoUsuario === 'Paciente' ?
-                            '<span class="text-xs font-medium text-purple-700"><i class="bi bi-person-badge"></i> [Paciente]</span>' :
-                            '<span class="text-xs font-medium text-indigo-700"><i class="bi bi-person"></i> [Solicitante]</span>';
-
-                        const card = document.createElement('div');
-                        card.className = 'p-4 flex items-start justify-between gap-3';
-
-                        card.innerHTML = `
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    ${tipo}
-                                    <div class="font-semibold text-gray-800">${e.nombre || 'Sin nombre'}</div>
-                                </div>
-                                <div class="mt-1 text-sm text-gray-600">
-                                    <span class="inline-flex items-center gap-1 mr-3"><i class="bi bi-calendar-event"></i> ${fechaISO}</span>
-                                    <span class="inline-flex items-center gap-1"><i class="bi bi-alarm"></i> ${h}</span>
-                                </div>
-                                <div class="text-sm text-gray-600 mt-1">
-                                    <strong>Motivo:</strong> ${e.motivo || 'Consulta general'}
-                                </div>
-                                <div class="mt-1">
-                                    <span class="px-2.5 py-1 rounded-full text-xs ${cls}">
-                                        ${estado.charAt(0).toUpperCase() + estado.slice(1)}
-                                    </span>
-                                    <span class="ml-2 inline-flex items-center gap-1 text-xs text-gray-500">
-                                        <i class="bi bi-hdd-network"></i> ${e.tipoCita === 'virtual' ? 'Virtual' : 'Presencial'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <a href="#" class="px-3 py-1.5 rounded-lg border text-sm hover:bg-gray-50">Más detalles</a>
-                            </div>
-                        `;
-                        cont.appendChild(card);
+                        const hora = ev.start?.slice(11, 16) || '--:--';
+                        const tipo = e.tipoCita === 'virtual' ? '💻 Virtual' : '🏥 Presencial';
+                        citasHTML += `
+                        <div class="text-sm text-gray-700 mt-1">
+                            • ${hora} — ${e.nombre || 'Sin nombre'}
+                            <span class="italic text-gray-500">(${tipo})</span>
+                        </div>`;
                     });
+
+                    popup.innerHTML = `
+                    <div class="flex flex-col text-gray-700">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="bi bi-check-circle-fill text-emerald-600"></i>
+                            <strong>${citas.length}</strong> cita${citas.length > 1 ? 's' : ''} el ${fechaISO}
+                        </div>
+                        ${citasHTML}
+                        <a href="#"
+                           class="inline-block mt-3 self-center px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-full text-xs font-medium shadow-md hover:scale-[1.05] hover:shadow-lg transition">
+                           Ver detalles
+                        </a>
+                    </div>`;
                 }
 
-                const modalEl = document.getElementById('modalCitasDia');
-                if (modalEl) new bootstrap.Modal(modalEl).show();
-            };
+                // Posicionar sobre la celda
+                const rect = info.dayEl.getBoundingClientRect();
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+                popup.style.top = `${rect.top + scrollTop + 45}px`;
+                popup.style.left = `${rect.left + scrollLeft + rect.width / 2 - 110}px`;
+
+                document.body.appendChild(popup);
+
+                // Mostrar popup
+                setTimeout(() => {
+                    popup.style.opacity = '1';
+                    popup.style.transform = 'translateY(0)';
+                }, 50);
+
+                // Cerrar si hace clic fuera
+                document.addEventListener('click', function cerrar(e) {
+                    if (!popup.contains(e.target)) {
+                        popup.remove();
+                        document.removeEventListener('click', cerrar);
+                    }
+                });
+
+                // Desaparece automáticamente
+                setTimeout(() => popup.remove(), 4000);
+            }
         })();
 
-        // Filtros client-side para la tabla de próximas citas
+        // === 🧭 Filtros client-side para tabla ===
         (function() {
             const btns = document.querySelectorAll('[data-filter]');
             const rows = document.querySelectorAll('#tbody-citas tr[data-tipo]');
 
             btns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const tipo = btn.getAttribute('data-filter'); // all | virtual | presencial
+                    const tipo = btn.getAttribute('data-filter');
                     rows.forEach(tr => {
                         tr.style.display = (tipo === 'all' || tr.getAttribute('data-tipo') ===
                             tipo) ? '' : 'none';
@@ -481,7 +495,7 @@
             });
         })();
 
-        // Hooks de acciones
+        // === ⚙️ Hooks de acciones ===
         (function() {
             document.addEventListener('click', function(e) {
                 const btn = e.target.closest('[data-action]');
@@ -494,6 +508,9 @@
             });
         })();
     </script>
+
+
+
     <style>
         /* FullCalendar custom styles */
         .calendar-compact-theme .fc-toolbar-title {
@@ -537,5 +554,40 @@
         .calendar-compact-theme .fc-day-today {
             background-color: #F5F3FF !important;
             border: 2px dashed #7C3AED;
+        }
+
+        /* Popup del calendario */
+        .popup-cita {
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Popup del calendario médico */
+        .popup-cita {
+            animation: fadeSlideUp 0.3s ease forwards;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(-6px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
     </style>

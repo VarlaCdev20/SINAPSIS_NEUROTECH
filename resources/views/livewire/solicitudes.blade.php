@@ -10,8 +10,7 @@
             </h2>
         </div>
 
-
-        <!-- 🔍 Búsqueda, filtros y exportación en un solo div -->
+        <!-- 🔍 Búsqueda, filtros y exportación -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
 
             <!-- Grupo: Buscar + Número de registros + Asignar cita -->
@@ -20,14 +19,14 @@
                 <!-- Buscar -->
                 <div class="flex items-center gap-2 bg-white px-3 py-2 border border-gray-300 rounded-lg shadow-sm">
                     <i class="bi bi-search text-accent-600 text-lg"></i>
-                    <input type="search" wire:model.live="buscar" placeholder="Nombre, código o correo..."
+                    <input type="search" wire:model.debounce.500ms="buscar" placeholder="Nombre, código o correo..."
                         class="focus:outline-none bg-transparent text-gray-700 w-44 sm:w-64">
                 </div>
 
                 <!-- Ver registros -->
                 <div class="flex items-center space-x-2">
                     <label class="text-gray-700 font-medium">Ver:</label>
-                    <select wire:model.live='n_registros'
+                    <select wire:model="n_registros"
                         class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-accent-200">
                         <option value="">Todo</option>
                         <option value="10">10</option>
@@ -42,22 +41,19 @@
                     <i class="bi bi-calendar2-plus-fill text-lg"></i>
                     <span class="hidden sm:inline">Asignar Cita</span>
                 </button>
-
-
-
             </div>
 
             <!-- Exportar -->
-            <div class="relative inline-block text-left">
-                <button id="exportarBtn"
+            <div x-data="{ open: false }" class="relative inline-block text-left">
+                <button @click="open = !open"
                     class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:bg-accent-100 focus:outline-none focus:ring-2 focus:ring-accent-300 transition-all duration-200">
                     <i class="bi bi-arrow-down-square text-accent-600 text-lg"></i>
                     Exportar
                     <i class="bi bi-chevron-down text-gray-500 text-sm"></i>
                 </button>
 
-                <div id="exportarMenu"
-                    class="hidden absolute right-0 mt-2 w-40 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                <div x-show="open" @click.outside="open = false" x-transition
+                    class="absolute right-0 mt-2 w-40 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                     <ul class="py-1">
                         <li>
                             <a href="/medico/solicitantes/exportar/csv"
@@ -76,21 +72,7 @@
             </div>
         </div>
 
-        <script>
-            const btn = document.getElementById('exportarBtn');
-            const menu = document.getElementById('exportarMenu');
-
-            btn.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (!btn.contains(e.target)) menu.classList.add('hidden');
-            });
-        </script>
-
-
-        <!-- 📋 TABLAS -->
+        <!-- 📋 Tablas -->
         @php
             $pendientes = $solicitantes->where('est_sol', 'pendiente');
             $aprobados = $solicitantes->where('est_sol', 'aprobado');
@@ -132,8 +114,6 @@
                                         <span class="hidden sm:inline">Aprobar</span>
                                     </button>
 
-
-                                    <!-- Rechazar -->
                                     <button wire:click="rechazar('{{ $s->cod_sol }}')"
                                         class="text-red-600 hover:text-red-800 font-semibold inline-flex items-center space-x-1 transition"
                                         title="Rechazar">
@@ -173,11 +153,11 @@
                         @forelse ($aprobados as $s)
                             <tr class="hover:bg-green-50 transition-colors">
                                 <td class="px-6 py-3 font-medium">{{ $s->cod_sol }}</td>
-                                <td class="px-6 py-3">{{ $s->nom_sol }} {{ $s->ap_pat_sol }} {{ $s->ap_mat_sol }}
-                                </td>
+                                <td class="px-6 py-3">{{ $s->nom_sol }} {{ $s->ap_pat_sol }} {{ $s->ap_mat_sol }}</td>
                                 <td class="px-6 py-3">{{ $s->email_sol ?? '—' }}</td>
                                 <td class="px-6 py-3">
-                                    {{ \Illuminate\Support\Str::limit($s->des_sol ?? 'Sin descripción', 100) }}</td>
+                                    {{ \Illuminate\Support\Str::limit($s->des_sol ?? 'Sin descripción', 100) }}
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -214,7 +194,8 @@
                                 </td>
                                 <td class="px-6 py-3">{{ $s->email_sol ?? '—' }}</td>
                                 <td class="px-6 py-3">
-                                    {{ \Illuminate\Support\Str::limit($s->des_sol ?? 'Sin descripción', 100) }}</td>
+                                    {{ \Illuminate\Support\Str::limit($s->des_sol ?? 'Sin descripción', 100) }}
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -228,16 +209,24 @@
             </div>
         </div>
     </div>
-    @livewire('agenda-solicitante')
 
-
+    {{-- 🧩 Componente modal (protegido para evitar errores de recarga) --}}
+    <div wire:ignore>
+        @livewire('agenda-solicitante')
+    </div>
 </div>
 
+<!-- 🔔 SweetAlert y Livewire -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('livewire:init', () => {
-        // ✅ Confirmación de aprobación
+    document.addEventListener('livewire:load', () => {
+        // Evitar registrar eventos dos veces
+        if (window.__solicitudesEventsBound) return;
+        window.__solicitudesEventsBound = true;
+
+        // 🔹 Confirmar Aprobación
         Livewire.on('confirmarAprobacion', codSol => {
+            if (!codSol) return;
             Swal.fire({
                 title: '¿Aprobar solicitud?',
                 text: 'Se marcará como aprobada de inmediato.',
@@ -249,16 +238,18 @@
                 cancelButtonText: 'Cancelar'
             }).then(result => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('confirmadoAprobacion', codSol);
+                    // ✅ Enviar valor directo, sin objeto
+                    Livewire.dispatchTo('solicitudes', 'confirmadoAprobacion', codSol);
                 }
             });
         });
 
-        // ⚠️ Confirmación de rechazo
+        // 🔹 Confirmar Rechazo
         Livewire.on('confirmarRechazo', codSol => {
+            if (!codSol) return;
             Swal.fire({
                 title: '¿Rechazar solicitud?',
-                text: "Esta acción no se puede deshacer.",
+                text: 'Esta acción no se puede deshacer.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e53e3e',
@@ -267,10 +258,21 @@
                 cancelButtonText: 'Cancelar'
             }).then(result => {
                 if (result.isConfirmed) {
-                    Livewire.dispatch('confirmadoRechazo', codSol);
+                    // ✅ Enviar valor directo, sin objeto
+                    Livewire.dispatchTo('solicitudes', 'confirmadoRechazo', codSol);
                 }
+            });
+        });
+
+        // 🔹 Alerta general (post acción)
+        Livewire.on('swal', data => {
+            Swal.fire({
+                icon: data.icon,
+                title: data.title,
+                text: data.text
+            }).then(() => {
+                Livewire.dispatch('refreshComponent');
             });
         });
     });
 </script>
-<!-- 🌟 MODAL DE REGISTRO DE CITA -->

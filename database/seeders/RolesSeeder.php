@@ -24,7 +24,7 @@ class RolesSeeder extends Seeder
             'Gestion_usuarios' => [$role1],
             'Pacientes' => [$role1],
             'Mis_Pacientes' => [$role2],
-            'Agenda' => [$role2],
+            'Agenda' => [$role1],
             'Reseñas' => [$role1],
             'Ajustes' => [$role1, $role2, $role3],
             'Solicitudes' => [$role2],
