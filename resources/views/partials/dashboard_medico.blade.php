@@ -72,7 +72,7 @@
 
         <div class="bg-white/90 backdrop-blur p-4 rounded-2xl shadow-sm border border-cyan-100">
             <div class="flex items-center justify-between">
-                <span class="text-xs uppercase text-gray-500">Telemedicina</span>
+                <span class="text-xs uppercase text-gray-500">Reuniones Virtuales</span>
                 <i class="bi bi-camera-video text-[#0891B2] text-xl"></i>
             </div>
             <div class="mt-1 text-3xl font-bold text-gray-900">{{ $hoyVirtual }}</div>
@@ -120,8 +120,8 @@
             </div>
 
             <div class="border-t pt-4">
-                <h5 class="font-semibold text-gray-800 mb-1">Conversión clínica</h5>
-                <p class="text-xs text-gray-500">Solicitantes → Pacientes</p>
+                <h5 class="font-semibold text-gray-800 mb-1">Tabla de Solicitantes</h5>
+                <p class="text-xs text-gray-500">Tus Solicitantes Pendientes</p>
                 <canvas id="chart-conversion" class="h-36 mt-3"></canvas>
             </div>
         </div>
@@ -230,7 +230,6 @@
             </table>
         </div>
     </div>
-
     <!-- Solicitantes pendientes -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
         <h5 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -288,212 +287,192 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        // Gráfico de distribución de citas
-        (function() {
-            const ctx = document.getElementById('chart-citas');
-            if (!ctx) return;
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Virtual', 'Presencial', 'Canceladas'],
-                    datasets: [{
-                        data: [
-                            Number(@json($stats['virtual'] ?? 0)),
-                            Number(@json($stats['presencial'] ?? 0)),
-                            Number(@json($stats['canceladas'] ?? 0))
-                        ],
-                        backgroundColor: [
-                            '#3B82F6',
-                            '#EC4899',
-                            '#F59E0B'
-                        ],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    cutout: '62%'
+<script>
+    // Gráfico de distribución de citas
+    (function() {
+        const ctx = document.getElementById('chart-citas');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Virtual', 'Presencial', 'Canceladas'],
+                datasets: [{
+                    data: [
+                        Number(@json($stats['virtual'] ?? 0)),
+                        Number(@json($stats['presencial'] ?? 0)),
+                        Number(@json($stats['canceladas'] ?? 0))
+                    ],
+                    backgroundColor: ['#3B82F6', '#EC4899', '#F59E0B'],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                cutout: '62%'
+            }
+        });
+    })();
+
+    // Gráfico de conversión clínica
+    (function() {
+        const ctx = document.getElementById('chart-conversion');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pendientes', 'Aprobados', 'Rechazados'],
+                datasets: [{
+                    data: [
+                        Number(@json($solPendientes ?? 0)),
+                        Number(@json($solAprobados ?? 0)),
+                        Number(@json($solRechazados ?? 0))
+                    ],
+                    backgroundColor: ['#6366F1', '#16A34A', '#DC2626'],
+                    borderColor: ['#4338CA', '#0F7A36', '#B91C1C'],
+                    borderWidth: 1.5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } }
                 }
-            });
-        })();
+            }
+        });
+    })();
 
-        // Gráfico de conversión clínica
-        (function() {
-            const ctx = document.getElementById('chart-conversion');
-            if (!ctx) return;
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Pendientes', 'Aprobados', 'Rechazados'],
-                    datasets: [{
-                        data: [
-                            Number(@json($solPendientes ?? 0)),
-                            Number(@json($solAprobados ?? 0)),
-                            Number(@json($solRechazados ?? 0))
-                        ],
-                        backgroundColor: [
-                            '#6366F1',
-                            '#16A34A',
-                            '#DC2626'
-                        ],
-                        borderColor: [
-                            '#4338CA',
-                            '#0F7A36',
-                            '#B91C1C'
-                        ],
-                        borderWidth: 1.5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    }
-                }
-            });
-        })();
+    // Calendario compacto semanal
+    (function() {
+        const eventos = @json($calendarEvents);
+        const el = document.getElementById('calendar-mini');
+        if (!el) return;
 
-        // Calendario compacto semanal
-        (function() {
-            const eventos = @json($calendarEvents);
-            const el = document.getElementById('calendar-mini');
-            if (!el) return;
+        const cal = new FullCalendar.Calendar(el, {
+            initialView: 'dayGridMonth',
+            contentHeight: "auto",
+            height: "auto",
+            expandRows: true,
+            locale: 'es',
+            firstDay: 1,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'timeGridWeek,dayGridMonth'
+            },
+            events: eventos,
+            eventDisplay: 'block',
 
-            const cal = new FullCalendar.Calendar(el, {
-                initialView: 'dayGridMonth',
-                contentHeight: "auto",
-                height: "auto",
-                expandRows: true,
-                locale: 'es',
-                firstDay: 1,
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridWeek,dayGridMonth'
-                },
-                events: eventos,
-                eventDisplay: 'block',
-                dateClick: function(info) {
-                    const fecha = info.dateStr.slice(0, 10);
-                    const delDia = eventos.filter(ev => (ev.start || '').slice(0, 10) === fecha);
-                    renderCitasDiaModal(delDia, fecha);
-                }
-            });
+            // 👉 Click en una fecha
+            dateClick: function(info) {
+                const fecha = info.dateStr.slice(0, 10);
+                const delDia = eventos.filter(ev => (ev.start || '').slice(0, 10) === fecha);
+                mostrarAvisoCalendario(info, delDia, fecha);
+            }
+        });
 
-            cal.render();
+        cal.render();
 
-            window.renderCitasDiaModal = function(items, fechaISO) {
-                const cont = document.getElementById('contenedor-citas-dia');
-                if (!cont) return;
-                cont.innerHTML = '';
+        // 🪄 Ventana emergente personalizada dentro del calendario
+        function mostrarAvisoCalendario(info, citas, fechaISO) {
+            // Elimina cualquier popup anterior
+            document.querySelectorAll('.popup-cita').forEach(p => p.remove());
 
-                if (!items || items.length === 0) {
-                    cont.innerHTML = '<div class="p-4 text-center text-gray-500">No hay citas para este día.</div>';
-                } else {
-                    items.sort((a, b) => (a.start || '').localeCompare(b.start || ''));
-                    items.forEach(ev => {
-                        const e = ev.extendedProps || {};
-                        const h = ev.start?.slice(11, 16) || '--:--';
-                        const estado = (e.estado || 'registrado').toLowerCase();
-                        const cls = {
-                            'registrado': 'bg-violet-100 text-violet-700',
-                            'confirmado': 'bg-emerald-100 text-emerald-700',
-                            'reprogramada': 'bg-amber-100 text-amber-700',
-                            'reprogramado': 'bg-amber-100 text-amber-700',
-                            'cancelada': 'bg-rose-100 text-rose-700',
-                            'cancelado': 'bg-rose-100 text-rose-700',
-                        } [estado] || 'bg-gray-100 text-gray-700';
+            // Crear el elemento popup
+            const popup = document.createElement('div');
+            popup.classList.add('popup-cita');
+            popup.style.position = 'absolute';
+            popup.style.zIndex = '9999';
+            popup.style.background = 'white';
+            popup.style.border = '2px solid #6D28D9';
+            popup.style.borderRadius = '10px';
+            popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            popup.style.padding = '10px 14px';
+            popup.style.fontSize = '14px';
+            popup.style.fontWeight = '500';
+            popup.style.color = '#333';
+            popup.style.maxWidth = '260px';
+            popup.style.pointerEvents = 'none';
+            popup.style.transition = 'opacity 0.3s ease';
+            popup.style.opacity = '0';
 
-                        const tipo = e.tipoUsuario === 'Paciente' ?
-                            '<span class="text-xs font-medium text-purple-700"><i class="bi bi-person-badge"></i> [Paciente]</span>' :
-                            '<span class="text-xs font-medium text-indigo-700"><i class="bi bi-person"></i> [Solicitante]</span>';
+            // Contenido dinámico
+            if (citas.length === 0) {
+                popup.innerHTML = `
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="bi bi-emoji-frown text-rose-600"></i>
+                        <span>No tienes citas el <strong>${fechaISO}</strong>.</span>
+                    </div>`;
+            } else {
+                popup.innerHTML = `
+                    <div class="flex flex-col text-gray-700">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="bi bi-check-circle-fill text-emerald-600"></i>
+                            <strong>${citas.length}</strong> cita${citas.length > 1 ? 's' : ''} el ${fechaISO}
+                        </div>
+                        ${citas.map(ev => {
+                            const e = ev.extendedProps || {};
+                            const hora = ev.start?.slice(11, 16) || '--:--';
+                            const tipo = e.tipoCita === 'virtual' ? '💻 Virtual' : '🏥 Presencial';
+                            return `
+                                <div class="text-sm text-gray-600 ms-3">
+                                    • ${hora} — ${e.nombre || 'Sin nombre'} 
+                                    <span class="italic text-gray-400">(${tipo})</span>
+                                </div>`;
+                        }).join('')}
+                    </div>`;
+            }
 
-                        const card = document.createElement('div');
-                        card.className = 'p-4 flex items-start justify-between gap-3';
+            // Posicionar sobre la celda del día clickeado
+            const rect = info.dayEl.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
 
-                        card.innerHTML = `
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    ${tipo}
-                                    <div class="font-semibold text-gray-800">${e.nombre || 'Sin nombre'}</div>
-                                </div>
-                                <div class="mt-1 text-sm text-gray-600">
-                                    <span class="inline-flex items-center gap-1 mr-3"><i class="bi bi-calendar-event"></i> ${fechaISO}</span>
-                                    <span class="inline-flex items-center gap-1"><i class="bi bi-alarm"></i> ${h}</span>
-                                </div>
-                                <div class="text-sm text-gray-600 mt-1">
-                                    <strong>Motivo:</strong> ${e.motivo || 'Consulta general'}
-                                </div>
-                                <div class="mt-1">
-                                    <span class="px-2.5 py-1 rounded-full text-xs ${cls}">
-                                        ${estado.charAt(0).toUpperCase() + estado.slice(1)}
-                                    </span>
-                                    <span class="ml-2 inline-flex items-center gap-1 text-xs text-gray-500">
-                                        <i class="bi bi-hdd-network"></i> ${e.tipoCita === 'virtual' ? 'Virtual' : 'Presencial'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <a href="#" class="px-3 py-1.5 rounded-lg border text-sm hover:bg-gray-50">Más detalles</a>
-                            </div>
-                        `;
-                        cont.appendChild(card);
-                    });
-                }
+            popup.style.top = `${rect.top + scrollTop + 45}px`;
+            popup.style.left = `${rect.left + scrollLeft + rect.width / 2 - 110}px`;
 
-                const modalEl = document.getElementById('modalCitasDia');
-                if (modalEl) new bootstrap.Modal(modalEl).show();
-            };
-        })();
+            // Insertar y mostrar
+            document.body.appendChild(popup);
+            setTimeout(() => popup.style.opacity = '1', 50);
 
-        // Filtros client-side para la tabla de próximas citas
-        (function() {
-            const btns = document.querySelectorAll('[data-filter]');
-            const rows = document.querySelectorAll('#tbody-citas tr[data-tipo]');
+            // Desaparece después de 3 segundos
+            setTimeout(() => popup.remove(), 3000);
+        }
+    })();
 
-            btns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tipo = btn.getAttribute('data-filter'); // all | virtual | presencial
-                    rows.forEach(tr => {
-                        tr.style.display = (tipo === 'all' || tr.getAttribute('data-tipo') ===
-                            tipo) ? '' : 'none';
-                    });
-                    btns.forEach(b => b.classList.remove('ring-2', 'ring-violet-300', 'bg-violet-50'));
-                    btn.classList.add('ring-2', 'ring-violet-300', 'bg-violet-50');
+    // Filtros client-side para la tabla de próximas citas
+    (function() {
+        const btns = document.querySelectorAll('[data-filter]');
+        const rows = document.querySelectorAll('#tbody-citas tr[data-tipo]');
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tipo = btn.getAttribute('data-filter'); // all | virtual | presencial
+                rows.forEach(tr => {
+                    tr.style.display = (tipo === 'all' || tr.getAttribute('data-tipo') === tipo) ? '' : 'none';
                 });
+                btns.forEach(b => b.classList.remove('ring-2', 'ring-violet-300', 'bg-violet-50'));
+                btn.classList.add('ring-2', 'ring-violet-300', 'bg-violet-50');
             });
-        })();
+        });
+    })();
 
-        // Hooks de acciones
-        (function() {
-            document.addEventListener('click', function(e) {
-                const btn = e.target.closest('[data-action]');
-                if (!btn) return;
-                const action = btn.getAttribute('data-action');
-                const id = btn.getAttribute('data-id');
-                if (!action || !id) return;
-                console.log('Acción:', action, 'Cita:', id);
-                // Aquí conectarás rutas reales: editar/reprogramar/cancelar
-            });
-        })();
-    </script>
+    // Hooks de acciones (editar / reprogramar / cancelar)
+    (function() {
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            if (!action || !id) return;
+            console.log('Acción:', action, 'Cita:', id);
+            // Aquí conectarás rutas reales: editar/reprogramar/cancelar
+        });
+    })();
+</script>
+
     <style>
         /* FullCalendar custom styles */
         .calendar-compact-theme .fc-toolbar-title {
@@ -537,5 +516,23 @@
         .calendar-compact-theme .fc-day-today {
             background-color: #F5F3FF !important;
             border: 2px dashed #7C3AED;
+        }
+
+        /* Popup del calendario */
+        .popup-cita {
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
