@@ -6,14 +6,19 @@ use App\Http\Controllers\{
     PanelController,
     ContactoController,
     SolicitanteExportController,
+    AgendaController,
     RecetarioController,
     EpisodioController
 };
-use App\Livewire\{MisPacientes, ListaPacientes, ListaRoles};
+use App\Livewire\{
+    MisPacientes,
+    ListaPacientes,
+    ListaRoles
+};
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PÚBLICAS
+| 🔓 RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
 
@@ -25,10 +30,9 @@ Route::post('/contacto/store', [ContactoController::class, 'store'])->name('cont
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS CON AUTENTICACIÓN
+| 🔐 RUTAS CON AUTENTICACIÓN (MIDDLEWARE GENERAL)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -37,28 +41,52 @@ Route::middleware([
 
     /*
     |--------------------------------------------------------------------------
-    | DASHBOARD PRINCIPAL
+    | 🏠 DASHBOARD PRINCIPAL
     |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', [PanelController::class, 'index'])->name('dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE USUARIOS (ADMIN)
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('/users', UserController::class)->names('users');
-    Route::get('/ciudades/{pais_id}', [UserController::class, 'getCiudades'])->name('ciudades.get');
-    Route::post('/users/refresh-roles', [UserController::class, 'refreshRoles'])->name('users.refreshRoles');
 
     /*
     |--------------------------------------------------------------------------
-    | ADMINISTRADOR: MÓDULOS
+    | 👥 GESTIÓN DE USUARIOS (ADMINISTRADOR)
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('/users', UserController::class)->names('users');
+
+    // Obtener ciudades dinámicamente
+    Route::get('/ciudades/{pais_id}', [UserController::class, 'getCiudades'])
+        ->name('ciudades.get');
+
+    // Sincronizar roles y códigos
+    Route::post('/users/refresh-roles', [UserController::class, 'refreshRoles'])
+        ->name('users.refreshRoles');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 💜 PACIENTE: MÓDULOS
+    |--------------------------------------------------------------------------
+    | Incluye todas las vistas y Livewire relacionados al paciente autenticado.
+    */
+    Route::prefix('paciente')->group(function () {
+        // Agenda del paciente (usa AgendaController@index)
+        Route::get('/agenda', [AgendaController::class, 'index'])
+            ->name('paciente.agenda');
+
+        // Aquí puedes añadir más rutas de paciente (ejemplo):
+        // Route::get('/historial', [HistorialController::class, 'index'])->name('paciente.historial');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ⚙️ ADMINISTRADOR: MÓDULOS
     |--------------------------------------------------------------------------
     */
     Route::prefix('admin')->middleware(['auth'])->group(function () {
 
-        // 📋 Pacientes (versión admin)
+        // 📋 Pacientes (vista listar)
         Route::get('/pacientes', function () {
             return view('admin.Pacientes.listar');
         })->name('pacientes.index');
@@ -69,9 +97,10 @@ Route::middleware([
         })->name('roles.index');
     });
 
+
     /*
     |--------------------------------------------------------------------------
-    | MÉDICO: MÓDULOS
+    | 🧠 MÉDICO: MÓDULOS
     |--------------------------------------------------------------------------
     */
     Route::prefix('medico')->middleware(['auth'])->group(function () {
@@ -79,11 +108,14 @@ Route::middleware([
         // 🧠 Solicitudes médicas
         Route::get('/solicitudes', function () {
             return view('medico.solicitudes.listar');
-        })->name('medico.solicitudes.listar')->middleware('can:Solicitudes');
+        })
+            ->name('medico.solicitudes.listar')
+            ->middleware('can:Solicitudes');
 
         // 📤 Exportación de solicitantes
         Route::get('/solicitantes/exportar/csv', [SolicitanteExportController::class, 'exportCsv'])
             ->name('solicitantes.exportar.csv');
+
         Route::get('/solicitantes/exportar/pdf', [SolicitanteExportController::class, 'exportPdf'])
             ->name('solicitantes.exportar.pdf');
 

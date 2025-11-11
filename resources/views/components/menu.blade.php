@@ -118,10 +118,10 @@
                 @endcan
 
                 @can('Calendario_Paciente')
-                    <a href="#"
+                    <a href="{{ route('paciente.agenda') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-accent-500/10 text-gray-700 transition">
                         <i class="bi bi-calendar4-week text-accent-500 text-lg"></i>
-                        <span x-show="sidebarOpen" class="ml-3 text-sm font-medium">Calendario</span>
+                        <span x-show="sidebarOpen" class="ml-3 text-sm font-medium">Mi Agenda</span>
                     </a>
                 @endcan
 
