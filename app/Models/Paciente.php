@@ -58,4 +58,9 @@ class Paciente extends Model
     {
         return $this->hasMany(Recetario::class, 'cod_pac', 'cod_pac');
     }
+
+    public function historial()
+    {
+        return $this->hasOne(Historial::class, 'COD_PAC', 'cod_pac');
+    }
 }

@@ -21,6 +21,7 @@ use App\Livewire\{
 | 🔓 RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -97,12 +98,11 @@ Route::middleware([
         })->name('roles.index');
     });
 
-
     /*
-    |--------------------------------------------------------------------------
-    | 🧠 MÉDICO: MÓDULOS
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------  
+| 🧠 MÉDICO: MÓDULOS  
+|--------------------------------------------------------------------------  
+*/
     Route::prefix('medico')->group(function () {
 
         // 🗓️ Agenda del médico
@@ -140,5 +140,10 @@ Route::middleware([
         // 🔄 Actualizar paciente
         Route::put('/mis-pacientes/{cod_usu}/actualizar', [UserController::class, 'updatePaciente'])
             ->name('pacientes.actualizar');
+
+        // 🧠 Historial Médico (Livewire dentro de Blade)
+        Route::get('/historial', function () {
+            return view('medico.historial.mostrar');
+        })->name('medico.historial');
     });
 });
