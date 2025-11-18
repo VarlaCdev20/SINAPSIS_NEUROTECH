@@ -102,7 +102,7 @@
                 @endcan
 
                 @can('Historial_Clinico')
-                    <a href="#"
+                    <a href="{{ route('medico.historial') }}"
                         class="flex items-center p-2 rounded-lg hover:bg-accent-500/10 text-gray-700 transition">
                         <i class="bi bi-clipboard-heart text-accent-500 text-lg"></i>
                         <span x-show="sidebarOpen" class="ml-3 text-sm font-medium">Historiales Clinicos</span>

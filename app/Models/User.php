@@ -29,10 +29,21 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'cod_usu',
         'name',
+        'paterno',
+        'materno',
+        'celular',
+        'direccion',
+        'fecha_nacimiento',
         'email',
+        'carnet',
         'password',
+        'estado',
+        'ocupacion',
+        'ciudad_id',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -82,7 +93,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Paciente::class, 'cod_usu', 'cod_usu');
     }
-
-
 }
-
